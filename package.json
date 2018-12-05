@@ -1,0 +1,16 @@
+{
+  "name": "ard-rest",
+  "version": "1.0.0",
+  "description": "",
+  "main": "restServer.js",
+  "scripts": {
+    "start": "node restServer.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "zigfred",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4",
+    "mongoose": "^5.3.14"
+  }
+}
