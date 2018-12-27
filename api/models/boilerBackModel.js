@@ -7,12 +7,11 @@ var BoilerBackSchema = new Schema({
     type: Date,
     default: Date.now
   },
-  cHeater1: Number,
-  cHeater2: Number,
-  cHeater3: Number,
-  tempIn: Number,
-  tempOut: Number,
-  fllmMain: Number
+  deviceId: Number,
+  version: Number,
+  flowBoilerBack: Number,
+  trans: [Number],
+  ds18: [Schema.Types.Mixed]
 });
 
 module.exports = mongoose.model('BoilerBack', BoilerBackSchema);

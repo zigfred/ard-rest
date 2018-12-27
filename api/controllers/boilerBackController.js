@@ -9,7 +9,6 @@ exports.list = function(req, res) {
   });
 };
 
-
 exports.create = function(req, res) {
   var newData = new BoilerBack(req.body);
   newData.save(function(err, data) {
