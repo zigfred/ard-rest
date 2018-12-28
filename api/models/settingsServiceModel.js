@@ -17,6 +17,7 @@ var SettingsServiceSchema = new Schema({
 
 SettingsServiceSchema.statics.setupDevice = function(deviceId, cb) {
 
+  //TODO remove times
   this.findOneAndUpdate({
     deviceId: deviceId
   }, {

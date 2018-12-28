@@ -3,7 +3,9 @@ var express = require('express'),
   port = process.env.PORT || 3010,
   mongoose = require('mongoose'),
   requireDir = require("./util/requireDir"),
-  bodyParser = require('body-parser');
+  bodyParser = require('body-parser'),
+
+  boilerWoodSaver = require("./boilerWoodSaver");
 
 requireDir.loadSync("api/models");
 
@@ -20,6 +22,8 @@ requireDir.loadSync("api/routes", function(loadedModule) {
 });
 
 app.listen(port);
+
+boilerWoodSaver.start();
 
 
 console.log('RESTful API server started on: ' + port);
