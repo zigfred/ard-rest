@@ -12,9 +12,9 @@ var BoilerWoodSchemaTmp = new Schema({
   "pt100-main": Number,
   "pt100-second": Number,
   "flowPulsesPerSecond": Number,
-  "tempIn": Number,
-  "tempOut": Number,
-  "tempFromTA": Number
+  "ds18In": Number,
+  "ds18Out": Number,
+  "ds18FromTA": Number
 });
 
 var BoilerWoodSchemaTmpModel = mongoose.model('BoilerWoodTmp', BoilerWoodSchemaTmp);
@@ -36,9 +36,9 @@ function loop() {
       "pt100-main": response.data.tempSmoke,
       "pt100-second": response.data.temp,
       flowPulsesPerSecond: response.data["L/min"],
-      tempIn: response.data.tempTToutIndx,
-      tempOut: response.data.tempTTinIndx,
-      tempFromTA: response.data.tempInverseIndx
+      ds18In: response.data.ds18In,
+      ds18Out: response.data.ds18Out,
+      ds18FromTA: response.data.ds18FromTA
     });
 
     boilerWoodTmp.save(function (err) {
