@@ -1,4 +1,5 @@
-var express = require('express'),
+var settings = require("./settings.json"),
+  express = require('express'),
   app = express(),
   port = process.env.PORT || 3010,
   mongoose = require('mongoose'),
@@ -23,7 +24,7 @@ requireDir.loadSync("api/routes", function(loadedModule) {
 
 app.listen(port);
 
-//boilerWoodSaver.start();
+settings.saveBoilerWood && boilerWoodSaver.start();
 
 
 console.log('RESTful API server started on: ' + port);
