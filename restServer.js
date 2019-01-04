@@ -12,7 +12,15 @@ requireDir.loadSync("api/models");
 
 // mongoose instance connection url connection
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost/ard-test-rest');
+var connectWithRetry = function() {
+  return mongoose.connect('mongodb://localhost/ard-test-rest', function(err) {
+    if (err) {
+      console.error('Failed to connect to mongo on startup - retrying in 5 sec', err);
+      setTimeout(connectWithRetry, 5000);
+    }
+  });
+};
+connectWithRetry();
 
 
 app.use(bodyParser.urlencoded({ extended: true }));

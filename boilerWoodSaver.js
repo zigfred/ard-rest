@@ -47,6 +47,5 @@ function loop() {
 
   }).catch(function(err) {
     console.log(err);
-    res.end("error");
   });
 }
