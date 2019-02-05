@@ -1,16 +1,17 @@
 var mongoose = require('mongoose'),
-  BoilerBack = mongoose.model('BoilerBack');
+  DataPoints = mongoose.model('DataPoints');
+
 
 exports.list = function(req, res) {
-  BoilerBack.find({}, function(err, list) {
+  DataPoints.find({}, function(err, dataPoints) {
     if (err)
       res.send(err);
-    res.json(list);
+    res.json(dataPoints);
   });
 };
 
 exports.create = function(req, res) {
-  var newData = new BoilerBack(req.body);
+  let newData = new DataPoints(req.body);
   newData.save(function(err, data) {
     if (err)
       res.send(err);
@@ -18,8 +19,8 @@ exports.create = function(req, res) {
   });
 };
 
-exports.read = function(req, res) {
-  BoilerBack.findById(req.params.dataId, function(err, data) {
+exports.update = function(req, res) {
+  DataPoints.findByIdAndUpdate(req.params.dataId, req.body, function(err, data) {
     if (err)
       res.send(err);
     res.json(data);

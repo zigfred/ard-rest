@@ -1,33 +1,20 @@
-var mongoose = require('mongoose'),
-  requireDir = require("./util/requireDir");
+var mongoose = require('mongoose');
 
-  requireDir.loadSync("api/models");
+require("./mongo/mongoUtil").connect().then(() => {
 
-mongoose.connection.on("open", function(ref) {
-  console.log("Connected to mongo server.");
-  setup();
-});
+  let Settings = mongoose.model('Settings');
 
-mongoose.connection.on("error", function(err) {
-  console.log("Could not connect to mongo server!");
-  console.log(err);
-});
-mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost:27017/ard-test-rest');
-
-SettingsService = mongoose.model('SettingsService');
-
-function setup() {
-  SettingsService.findOne({
-    deviceId: "boilerBack"
-  }, function(err, settings) {
+  Settings.findOne({}, function(err, settings) {
     if (!settings) {
-      settings = new SettingsService({
-        deviceId: "boilerBack",
-        intervalLogServicePeriod: 10000,
-        ds18Precision: 10
-      });
-      settings.save();
+      let settings =  new Settings();
+      settings.save(function(err, settings) {
+        if (err)
+          console.log(err);
+        console.log("Done");
+        process.exit();
+      })
     }
   });
-}
+
+
+});

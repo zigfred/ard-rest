@@ -1,17 +1,16 @@
 var mongoose = require('mongoose'),
-  BoilerWood = mongoose.model('BoilerWood');
+  Arduinos = mongoose.model('Arduinos');
 
 exports.list = function(req, res) {
-  BoilerWood.find({}, function(err, list) {
+  Arduinos.find({}, function(err, arduinos) {
     if (err)
       res.send(err);
-    res.json(list);
+    res.json(arduinos);
   });
 };
 
-
 exports.create = function(req, res) {
-  var newData = new BoilerWood(req.body);
+  let newData = new Arduinos(req.body);
   newData.save(function(err, data) {
     if (err)
       res.send(err);
@@ -19,8 +18,8 @@ exports.create = function(req, res) {
   });
 };
 
-exports.read = function(req, res) {
-  BoilerWood.findById(req.params.dataId, function(err, data) {
+exports.update = function(req, res) {
+  Arduinos.findByIdAndUpdate(req.params.dataId, req.body, function(err, data) {
     if (err)
       res.send(err);
     res.json(data);
