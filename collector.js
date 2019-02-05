@@ -79,7 +79,7 @@ function getDataFromArduino(arduino) {
 }
 function collectDataFromArduino(allData) {
   let data = allData.map(item => {
-    return item.data || {}
+    return item && item.data || {}
   });
   return Object.assign(...data);
 }
