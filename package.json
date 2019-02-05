@@ -16,7 +16,7 @@
     "mongoose": "^5.3.14"
   },
   "engines" : {
-    "node" : ">=11.9"
+    "node" : ">=8"
   },
   "engineStrict" : true
 }
