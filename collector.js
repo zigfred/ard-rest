@@ -13,11 +13,10 @@ var start = async function() {
   try {
     await mongoUtil.connect();
     let settings = await Settings.findOne({});
-    let arduinos = await Arduinos.find({});
 
-    loop(settings, arduinos);
+    loop();
 
-    setInterval(() => loop(settings, arduinos), settings.collectionInterval);
+    setInterval(loop, settings.collectionInterval);
 
   } catch (err) {
     console.error(err);
@@ -27,26 +26,31 @@ var start = async function() {
 
 start();
 
-function loop(settings, arduinos) {
+async function loop() {
 
-  Promise.all(arduinos.map(getDataFromArduino))
-    .then(resultAll => {
-      // TODO save arduino params here
+  try {
+    let arduinos = await Arduinos.find({});
+    let resultAll = await Promise.all(arduinos.map(getDataFromArduino));
+    if (!arduinos.length || !resultAll.length) {
+      console.log("Nothing to save. Done.");
+      return;
+    }
+    // TODO save arduino params
 
-      let dataObj = collectDataFromArduino(resultAll);
-      saveNewPlaces(dataObj).catch((err) => console.log(err));
+    let dataObj = collectDataFromArduino(resultAll);
 
-      let collector = new Collector({data: dataObj});
-      collector.markModified('data');
-      collector.save(function (err) {
-        if (err) {
-          console.error("save Collector failed with ", err);
-        }
-      });
-    })
-    .catch(err => {
-      console.log("all: ", err);
+    let collector = new Collector({data: dataObj});
+    collector.markModified('data');
+    collector.save(function (err) {
+      if (err) {
+        console.error("save Collector failed with ", err);
+      }
     });
+
+    saveNewPlaces(dataObj);
+  } catch (err) {
+    console.log("all: ", err);
+  }
 }
 
 function getDataFromArduino(arduino) {
