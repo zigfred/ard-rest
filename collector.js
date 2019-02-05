@@ -41,7 +41,7 @@ async function loop() {
     }
 
     let dataObj = collectDataFromArduino(resultAll);
-    if (Object.keys(dataObj) === 0) {
+    if (Object.keys(dataObj).length === 0) {
       console.log("Nothing to save. Done.");
       return;
     }
@@ -79,7 +79,11 @@ function getDataFromArduino(arduino) {
 }
 function collectDataFromArduino(allData) {
   let data = allData.map(item => {
-    return item && item.data || {}
+    let data = {};
+    if (item && item.data) {
+      data = item.data;
+    }
+    return data;
   });
   return Object.assign(...data);
 }
