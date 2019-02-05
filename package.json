@@ -5,6 +5,7 @@
   "main": "restServer.js",
   "scripts": {
     "start": "node restServer.js",
+    "collect": "node collector.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "zigfred",
@@ -13,5 +14,9 @@
     "axios": "^0.18.0",
     "express": "^4.16.4",
     "mongoose": "^5.3.14"
-  }
+  },
+  "engines" : {
+    "node" : ">=11.9"
+  },
+  "engineStrict" : true
 }
