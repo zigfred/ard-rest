@@ -42,6 +42,10 @@ async function loop() {
     // TODO save arduino params
 
     let dataObj = collectDataFromArduino(resultAll);
+    if (Object.keys(dataObj) === 0) {
+      console.log("Nothing to save. Done.");
+      return;
+    }
 
     let collector = new Collector({data: dataObj});
     collector.markModified('data');
@@ -74,7 +78,9 @@ function getDataFromArduino(arduino) {
     });
 }
 function collectDataFromArduino(allData) {
-  let data = allData.map(item => item.data);
+  let data = allData.map(item => {
+    return item.data || {}
+  });
   return Object.assign(...data);
 }
 async function saveNewPlaces(dataObj) {
