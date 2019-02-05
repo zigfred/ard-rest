@@ -39,7 +39,6 @@ async function loop() {
       console.log("Nothing to save. Done.");
       return;
     }
-    // TODO save arduino params
 
     let dataObj = collectDataFromArduino(resultAll);
     if (Object.keys(dataObj) === 0) {
@@ -55,6 +54,7 @@ async function loop() {
       }
     });
 
+    // TODO save arduino params
     saveNewPlaces(dataObj);
   } catch (err) {
     console.log("all: ", err);
@@ -64,7 +64,7 @@ async function loop() {
 function getDataFromArduino(arduino) {
 
   if (!arduino.saveEnabled) {
-    return;
+    return {};
   }
 
   let arduinoUri = "http://" + arduino.ip + ":" + arduino.port;
