@@ -30,8 +30,12 @@ async function loop() {
 
   try {
     let arduinos = await Arduinos.find({});
+    if (!arduinos || !arduinos.length ) {
+      console.log("Arduinos list empty. Done.");
+      return;
+    }
     let resultAll = await Promise.all(arduinos.map(getDataFromArduino));
-    if (!arduinos.length || !resultAll.length) {
+    if (!resultAll || !resultAll.length) {
       console.log("Nothing to save. Done.");
       return;
     }
