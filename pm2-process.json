@@ -1,0 +1,16 @@
+{
+  "apps" : [{
+    "name"        : "restServer",
+    "script"      : "./restServer.js",
+    "log_date_format" : "YYYY-MM-DD HH:mm Z"
+  }, {
+    "name"        : "collector",
+    "script"      : "./collector.js",
+    "log_date_format" : "YYYY-MM-DD HH:mm Z"
+  }, {
+    "name"        : "app",
+    "script"      : "./app.js",
+    "log_date_format" : "YYYY-MM-DD HH:mm Z",
+    "watch"       : ["app.js", "./static/*"]
+  }]
+}
