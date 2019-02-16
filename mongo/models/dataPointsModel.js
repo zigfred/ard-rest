@@ -6,6 +6,7 @@ var DataPointsSchema = new Schema({
   label: String,
   address: String,
   type: { type: Schema.Types.ObjectId, ref: 'DataPointTypes' },
+  isActive: Boolean,
   time: {
     type: Date,
     default: Date.now
