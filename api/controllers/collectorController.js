@@ -43,6 +43,7 @@ exports.list = function(req, res) {
     query.select(selectParams);
   }
 
+  query.sort({_id: 1});
   query.exec(function(err, data) {
     if (err)
       res.send(err);
