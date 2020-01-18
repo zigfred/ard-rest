@@ -12,15 +12,33 @@ exports.get = function(req, res) {
 };
 
 exports.list = function(req, res) {
-  const {limit, address, startDate, endDate} = req.body;
+  const {limit, address, startDate, endDate, isRelativeDate, relativeDate} = req.body;
 
   const findParams = {
     time: {
-      $lte: endDate ? new Date(endDate) : new Date()
+      $lte: isRelativeDate && endDate ? new Date(endDate) : new Date()
     }
   };
-  if (startDate) {
+
+  if (startDate && !isRelativeDate) {
     findParams.time.$gte = new Date(startDate)
+  } else {
+    const { days, hours, minutes } = relativeDate;
+    let shiftMs = 0;
+    if (minutes) {
+      shiftMs += minutes * 60 * 1000;
+    }
+    if (hours) {
+      shiftMs += hours * 60 * 60 * 1000;
+    }
+    if (days) {
+      shiftMs += days * 24 * 60 * 60 * 1000;
+    }
+    if (!shiftMs) {
+      shiftMs = 24 * 60 * 60 * 1000; // one day milliseconds
+    }
+    const startMs = +(new Date()) - shiftMs;
+    findParams.time.$gte = new Date(startMs);
   }
 
   const query = Collector.find(findParams);
