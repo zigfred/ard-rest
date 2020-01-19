@@ -16,7 +16,7 @@ exports.list = function(req, res) {
 
   const findParams = {
     time: {
-      $lte: isRelativeDate && endDate ? new Date(endDate) : new Date()
+      $lte: endDate && !isRelativeDate ? new Date(endDate) : new Date()
     }
   };
 
