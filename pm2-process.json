@@ -12,5 +12,9 @@
     "script"      : "./app.js",
     "log_date_format" : "YYYY-MM-DD HH:mm Z",
     "watch"       : ["app.js", "./static/*"]
+  }, {
+    "name"        : "command1",
+    "script"      : "./commands/bwCommand.js",
+    "log_date_format" : "YYYY-MM-DD HH:mm Z"
   }]
 }

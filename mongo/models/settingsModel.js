@@ -6,6 +6,10 @@ var SettingsSchema = new Schema({
   collectionInterval: {
     type: Number,
     default: 10000
+  },
+  defaultRuleInterval: {
+    type: Number,
+    default: 5000
   }
 });
 

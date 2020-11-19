@@ -55,7 +55,7 @@ async function loop() {
     });
 
     // TODO save arduino params
-    saveNewPlaces(dataObj);
+    await saveNewPlaces(dataObj);
   } catch (err) {
     console.log("all: ", err);
   }
@@ -88,13 +88,13 @@ function collectDataFromArduino(allData) {
   return Object.assign(...data);
 }
 async function saveNewPlaces(dataObj) {
-  let incommingAddressList = Object.keys(dataObj);
+  let incomingAddressList = Object.keys(dataObj);
   let dataPoints = await DataPoints.find({
-    address: {$in: incommingAddressList}
+    address: {$in: incomingAddressList}
   }).select("address -_id").exec();
   let dataPointsList = dataPoints.map(item => item.address);
 
-  let newDataPointDataList = incommingAddressList.reduce((result, next) => {
+  let newDataPointDataList = incomingAddressList.reduce((result, next) => {
     if (!dataPointsList.includes(next)) {
       result.push({
         address: next,

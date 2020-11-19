@@ -7,7 +7,8 @@
     "startupConnectionInterval": 5000
   },
   "axios": {
-    "collectorTimeout": 13000
+    "collectorTimeout": 13000,
+    "commandTimeout": 3000
   },
   "express": {
     "port": 3010
