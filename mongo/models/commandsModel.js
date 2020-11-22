@@ -19,7 +19,8 @@ var CommandsSchema = new Schema({
   enabled: {
     type: Boolean,
     default: false
-  }
+  },
+  settings: {}
 });
 
 module.exports = mongoose.model('Commands', CommandsSchema);

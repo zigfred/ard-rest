@@ -50,3 +50,51 @@ exports.project2 = {
 
   }
 };
+
+exports.brControl = {
+  getData: async function(req, res) {
+    const select = [
+      'data.br-force-enabled',
+      'data.28ff6b82011704bf',
+      'data.28ffec3d0117042e',
+      'data.28ffd44f40170322',
+      'data.br-trans-1',
+      'data.br-trans-2',
+      'data.br-trans-3',
+      'data.br-flow'
+
+    ];
+    const data = {};
+    data.collector = await Collector.findOne()
+    .select(select)
+    .sort('-_id')
+    .exec();
+
+    data.command = await Commands.findOne({ alias: 'br' });
+
+    res.json(data);
+  },
+  update: async function(req, res) {
+    try {
+      const { enabled, settings } = req.body;
+      const doc = await Commands.findOne({ alias: 'br' });
+
+      if (enabled !== undefined) {
+        doc.enabled = enabled;
+      }
+
+      if (settings) {
+        doc.settings = {
+          ...doc.settings,
+          ...settings
+        }
+      }
+
+      const result = await doc.save();
+      res.json(result);
+    } catch(err) {
+      console.error(err);
+      res.code(500).send(err);
+    }
+  }
+};

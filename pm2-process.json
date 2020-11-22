@@ -16,5 +16,9 @@
     "name"        : "command1",
     "script"      : "./commands/bwCommand.js",
     "log_date_format" : "YYYY-MM-DD HH:mm Z"
+  }, {
+    "name"        : "brCommand",
+    "script"      : "./commands/brCommand.js",
+    "log_date_format" : "YYYY-MM-DD HH:mm Z"
   }]
 }

@@ -9,4 +9,9 @@ module.exports = function(app) {
   app.route('/projects/project2')
     .post(projects.project2.update);
 
+  app.route('/projects/brControl')
+    .get(projects.brControl.getData);
+  app.route('/projects/brControl')
+    .post(projects.brControl.update);
+
 };
