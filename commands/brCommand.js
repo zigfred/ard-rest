@@ -34,7 +34,7 @@ async function loop() {
     // 1. if command says ENABLE - check force and enable if it is off
     // 2. if not and data.force is on - DISABLE is
 
-    if (command && command.enabled && isForceInRange(command)) {
+    if (command && command.enabled && isForceInRanges(command)) {
       if (brForceEnabled) {
         return; // EXIT here
       }
@@ -51,8 +51,14 @@ async function loop() {
   }
 }
 
-function isForceInRange(command) {
-  const { startTime, stopTime } = command.settings;
+function isForceInRanges(command) {
+  const { periods } = command.settings;
+
+  periods.some(period => isForceInRange(period));
+}
+
+function isForceInRange(period) {
+  const { startTime, stopTime } = period;
   if (!startTime || !stopTime ) {
     return false;
   }
@@ -73,7 +79,12 @@ function isForceInRange(command) {
 }
 
 const runCommand = (newValue) => {
-  return axios.get('http://192.168.1.112:40112/' + newValue ? 'start-heat' : 'stop-heat');
+  const url = 'http://192.168.1.112:40112/' + (newValue ? 'start-heat' : 'stop-heat');
+  return axios.get(url).then(result => {
+    console.log('Success ', newValue);
+  }).catch(error => {
+    console.log('HTTP call error.');
+  });
 }
 
 const getData = async () => {

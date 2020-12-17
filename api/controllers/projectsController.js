@@ -64,17 +64,19 @@ exports.brControl = {
       'data.br-flow'
 
     ];
-    const data = {};
-    data.collector = await Collector.findOne()
+    const data = await Collector.findOne()
     .select(select)
     .sort('-_id')
     .exec();
 
-    data.command = await Commands.findOne({ alias: 'br' });
+    res.json(data);
+  },
+  getCommand: async function(req, res) {
+    const data = await Commands.findOne({ alias: 'br' });
 
     res.json(data);
   },
-  update: async function(req, res) {
+  updateCommand: async function(req, res) {
     try {
       const { enabled, settings } = req.body;
       const doc = await Commands.findOne({ alias: 'br' });
