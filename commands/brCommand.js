@@ -54,7 +54,7 @@ async function loop() {
 function isForceInRanges(command) {
   const { periods } = command.settings;
 
-  periods.some(period => isForceInRange(period));
+  return periods.some(period => isForceInRange(period));
 }
 
 function isForceInRange(period) {
