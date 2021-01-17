@@ -92,6 +92,7 @@ async function loop() {
   }
 }
 const calcPosition = (currentAngle, targetAngle, currentPosition) => {
+  currentPosition -= 93;
   if (currentAngle - targetAngle > 1) {
     return --currentPosition;
   }
