@@ -78,8 +78,8 @@ async function loop() {
     if (newPosition > 155) {
       newPosition = 155;
     }
-    if (newPosition < 0) {
-      newPosition = 0;
+    if (newPosition < 1) {
+      newPosition = 1;
     }
     if (newPosition !== data['bw-servo-shutter']) {
       console.log('Set position: ', newPosition);
