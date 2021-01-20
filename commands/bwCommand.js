@@ -54,7 +54,7 @@ async function loop() {
 
     const { '28ffbb7e621801e4': fromTT } = data;
 
-    const targetAngle = calcAuto(fromTT);
+    const targetAngle = calcAutoAngle(fromTT);
     if (targetAngle !== command.autoValue) {
       await saveValue(targetAngle, command);
     }
@@ -78,6 +78,9 @@ async function loop() {
     if (newPosition > 155) {
       newPosition = 155;
     }
+    if (newPosition < 0) {
+      newPosition = 0;
+    }
     if (newPosition !== data['bw-servo-shutter']) {
       console.log('Set position: ', newPosition);
       try {
@@ -91,23 +94,20 @@ async function loop() {
     console.error(err);
   }
 }
-const calcPosition = (currentAngle, targetAngle, currentPosition) => {
-  currentPosition -= 93;
-  if (currentAngle - targetAngle > 1) {
-    return --currentPosition;
-  }
-  if (currentAngle - targetAngle < -1) {
-    return ++currentPosition;
-  }
-  return currentPosition;
-  //return currentAngle < targetAngle ? ++currentPosition : --currentPosition;
-}
 
-const calcAuto = (fromTT) => {
+const calcPosition = (currentAngle, targetAngle, currentPosition) => {
+  const step = (Math.abs(currentAngle - targetAngle) > 5) ? 5 : 1;
+  return currentAngle < targetAngle
+    ? currentPosition - step
+    : currentPosition + step;
+};
+
+const calcAutoAngle = (fromTT) => {
   // https://planetcalc.ru/5992/
-  const newPosition = 164793178.9496*Math.pow(0.8260, fromTT);
-  return convertValue(newPosition);
-}
+  const angle = 164793178.9496*Math.pow(0.8260, fromTT) - 1;
+  return convertValue(angle);
+};
+
 const convertValue = (value) => {
   switch(true) {
     case value > 155:
@@ -117,18 +117,21 @@ const convertValue = (value) => {
     default:
       return Math.round(value) || 1;
   }
+};
 
-}
 const runCommand = (newValue) => {
   return axios.get('http://192.168.1.111:40111/command?servo=' + newValue);
-}
+};
+
 const saveValue = async (autoValue, command) => {
   command.autoValue = autoValue;
   return await command.save();
-}
+};
+
 const updateErrorCounter = async command => {
   // TODO: increase error counter
-}
+};
+
 const getData = async () => {
   //return Collector.findOne().sort('-_id');
   try {
@@ -138,4 +141,4 @@ const getData = async () => {
     console.error('Get data HTTP issue');
     return false;
   }
-}
+};
