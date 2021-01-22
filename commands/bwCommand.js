@@ -81,7 +81,7 @@ async function loop() {
     if (newPosition < 1) {
       newPosition = 1;
     }
-    if (newPosition !== data['bw-servo-shutter']) {
+    if (newPosition !== parseInt(data['bw-servo-shutter'], 10)) {
       console.log('Set position: ', newPosition);
       try {
         await runCommand(newPosition);
