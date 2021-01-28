@@ -22,7 +22,7 @@ exports.project2 = {
       'data.28ffbb7e621801e4',
       'data.28ff3d1cb3160475',
       'data.28ff727c0117050a',
-      'data.bw-tPT100-smoke',
+      'data.bw-smoke-1',
       'data.bw-pressure',
       'data.bw-flow',
       'data.bw-gy-shutter',
