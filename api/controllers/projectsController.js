@@ -25,8 +25,8 @@ exports.project2 = {
       'data.bw-smoke-1',
       'data.bw-pressure',
       'data.bw-flow',
-      'data.bw-gy-shutter',
-      'data.bw-servo-shutter'
+      'data.bw-shutter-gy',
+      'data.bw-shutter-servo'
     ];
     const data = {};
     data.collector = await Collector.findOne()

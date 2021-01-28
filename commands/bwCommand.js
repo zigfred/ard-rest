@@ -12,8 +12,8 @@ const select = [
   'data.bw-smoke-1',
   'data.bw-pressure',
   'data.bw-flow',
-  'data.bw-gy-shutter',
-  'data.bw-servo-shutter'
+  'data.bw-shutter-gy',
+  'data.bw-shutter-servo'
 ];
 
 var start = async function() {
@@ -60,17 +60,17 @@ async function loop() {
     }
 
     const autoPosition = calcPosition(
-      data['bw-gy-shutter'],
+      data['bw-shutter-gy'],
       targetAngle,
-      data['bw-servo-shutter']);
+      data['bw-shutter-servo']);
 
 
     let newPosition = command.isManualMode ?  command.manualValue : autoPosition;
 
     if (isNaN(newPosition)) {
       let errorMsg = 'Calculated position is NaN. Current angle: ';
-      errorMsg += data['bw-gy-shutter'] + '.';
-      errorMsg += 'Current position: ' + data['bw-servo-shutter'] + '.';
+      errorMsg += data['bw-shutter-gy'] + '.';
+      errorMsg += 'Current position: ' + data['bw-shutter-servo'] + '.';
       console.log(errorMsg);
       return;
     }
@@ -81,7 +81,7 @@ async function loop() {
     if (newPosition < 1) {
       newPosition = 1;
     }
-    if (newPosition !== parseInt(data['bw-servo-shutter'], 10)) {
+    if (newPosition !== parseInt(data['bw-shutter-servo'], 10)) {
       console.log('Set position: ', newPosition);
       try {
         await runCommand(newPosition);
