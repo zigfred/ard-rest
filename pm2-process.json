@@ -13,7 +13,7 @@
     "log_date_format" : "YYYY-MM-DD HH:mm Z",
     "watch"       : ["app.js", "./static/*"]
   }, {
-    "name"        : "command1",
+    "name"        : "bwCommand",
     "script"      : "./commands/bwCommand.js",
     "log_date_format" : "YYYY-MM-DD HH:mm Z"
   }, {
