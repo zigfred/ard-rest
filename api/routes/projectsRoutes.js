@@ -4,10 +4,10 @@ module.exports = function(app) {
   app.route('/projects/project1')
     .get(projects.project1.getData);
 
-  app.route('/projects/project2')
-    .get(projects.project2.getData);
-  app.route('/projects/project2')
-    .post(projects.project2.update);
+  app.route('/projects/bwControl')
+    .get(projects.bwControl.getData);
+  app.route('/projects/bwControl')
+    .post(projects.bwControl.update);
 
   app.route('/projects/brControl/data')
     .get(projects.brControl.getData);

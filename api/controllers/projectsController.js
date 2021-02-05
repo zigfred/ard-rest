@@ -16,7 +16,7 @@ exports.project1 = {
   }
 };
 
-exports.project2 = {
+exports.bwControl = {
   getData: async function(req, res) {
     const select = [
       'data.28ffbb7e621801e4',
