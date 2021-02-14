@@ -9,11 +9,16 @@ module.exports = function(app) {
   app.route('/projects/bwControl')
     .post(projects.bwControl.update);
 
+  app.route('/projects/command/:alias')
+  .get(projects.command.getCommand);
+  app.route('/projects/command')
+  .post(projects.command.updateCommand);
+
+
   app.route('/projects/brControl/data')
     .get(projects.brControl.getData);
-  app.route('/projects/brControl/command')
-    .get(projects.brControl.getCommand);
-  app.route('/projects/brControl/command')
-    .post(projects.brControl.updateCommand);
+
+  app.route('/projects/bdControl/data')
+    .get(projects.bdControl.getData);
 
 };

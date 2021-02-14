@@ -51,6 +51,48 @@ exports.bwControl = {
   }
 };
 
+exports.command = {
+  getCommand: async function(req, res) {
+    const { alias } = req.params;
+    if (!alias) {
+      console.warn('Controller:command:getCommand - no alias param');
+      return;
+    }
+    const data = await Commands.findOne({ alias });
+
+    res.json(data);
+  },
+  updateCommand: async function(req, res) {
+    try {
+      const { alias, enabled, settings } = req.body;
+
+      if (!alias) {
+        console.warn('Controller:command:updateCommand - no alias param');
+        return;
+      }
+
+      const doc = await Commands.findOne({ alias });
+
+      if (enabled !== undefined) {
+        doc.enabled = enabled;
+      }
+
+      if (settings) {
+        doc.settings = {
+          ...doc.settings,
+          ...settings
+        }
+      }
+
+      const result = await doc.save();
+      res.json(result);
+    } catch(err) {
+      console.error(err);
+      res.code(500).send(err);
+    }
+  }
+};
+
 exports.brControl = {
   getData: async function(req, res) {
     const select = [
@@ -70,33 +112,35 @@ exports.brControl = {
     .exec();
 
     res.json(data);
-  },
-  getCommand: async function(req, res) {
-    const data = await Commands.findOne({ alias: 'br' });
+  }
+};
+
+exports.bdControl = {
+  getData: async function(req, res) {
+    const select = [
+      'data.bd-trans-1',
+      'data.bd-trans-2',
+      'data.bd-trans-3',
+      'data.bd-flow',
+      'data.28ff4b5662180392', //bd-temp-case
+      'data.28ff69250117054d', //bd-temp-out
+      'data.28ff0579b516038c', //ta-temp-top
+      'data.28ffcf09b316036a', //ta-temp-middle
+      'data.28ff74f0b216031c', //ta-temp-bottom
+      'data.28ff14170117035e', //ta-temp-bottom
+      'data.bd-heater-run',
+      'data.bd-heater-1',
+      'data.bd-heater-2',
+      'data.bd-heater-3',
+      'data.bd-heater-4',
+      'data.bd-heater-5',
+      'data.bd-heater-6'
+    ];
+    const data = await Collector.findOne()
+    .select(select)
+    .sort('-_id')
+    .exec();
 
     res.json(data);
-  },
-  updateCommand: async function(req, res) {
-    try {
-      const { enabled, settings } = req.body;
-      const doc = await Commands.findOne({ alias: 'br' });
-
-      if (enabled !== undefined) {
-        doc.enabled = enabled;
-      }
-
-      if (settings) {
-        doc.settings = {
-          ...doc.settings,
-          ...settings
-        }
-      }
-
-      const result = await doc.save();
-      res.json(result);
-    } catch(err) {
-      console.error(err);
-      res.code(500).send(err);
-    }
   }
 };
