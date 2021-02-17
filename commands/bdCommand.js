@@ -13,7 +13,7 @@ const start = async function() {
 
     loop();
 
-    setInterval(loop, settings.defaultRuleInterval || 5000);
+    setInterval(loop, 30000 || settings.defaultRuleInterval || 5000);
 
   } catch (err) {
     console.error(err);
