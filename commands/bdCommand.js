@@ -177,7 +177,7 @@ const runCommand = (commandString = '') => {
   return axios.get(url).then(result => {
     console.log('HTTP call success ', commandString);
   }).catch(error => {
-    console.log('HTTP call error.', commandString, error);
+    console.log('HTTP call error.', commandString);
   });
 };
 
