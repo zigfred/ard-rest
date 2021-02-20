@@ -5,6 +5,8 @@ const axios = require('../config/axios').forCommand,
   Commands = mongoose.model('Commands'),
   Collector = mongoose.model('Collector');
 
+const RELAY_SWITCH_DELAY = 1000;
+
 const start = async function() {
 
   try {
@@ -153,7 +155,7 @@ const commandExecute = (stateFlags, periodFlags) => {
       let stepString = initCommandString;
       setTimeout(() => {
         runCommand(stepString);
-      }, 500 * runCount++);
+      }, RELAY_SWITCH_DELAY * runCount++);
     }
   });
 };
