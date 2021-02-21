@@ -1,9 +1,9 @@
 const mongoose = require('mongoose'),
   requireDir = require("../util/requireDir"),
-  config = require('../config/config.json'),
+  configSecure = require('../config/config-secure.json'),
 
-  connectionUri = config.mongo.mongoUri + config.mongo.dbName,
-  startupConnectionInterval = config.mongo.startupConnectionInterval;
+  connectionUri = configSecure.mongo.mongoUri + configSecure.mongo.dbName,
+  startupConnectionInterval = configSecure.mongo.startupConnectionInterval;
 
 requireDir.loadSync("mongo/models");
 

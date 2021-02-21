@@ -1,11 +1,6 @@
 {
   "collector": {
   },
-  "mongo": {
-    "mongoUri": "mongodb://localhost:27017/",
-    "dbName": "ard-test-1",
-    "startupConnectionInterval": 5000
-  },
   "axios": {
     "collectorTimeout": 13000,
     "commandTimeout": 3000
