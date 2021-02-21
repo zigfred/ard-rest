@@ -5,7 +5,7 @@ const axios = require('../config/axios').forCommand,
   Commands = mongoose.model('Commands'),
   Collector = mongoose.model('Collector');
 
-const RELAY_SWITCH_DELAY = 1000;
+const RELAY_SWITCH_DELAY = 3000;
 
 const start = async function() {
 
@@ -51,7 +51,11 @@ const select = [
 async function loop() {
   try {
     const command = await Commands.findOne({ alias: 'bd' });
-    const { data: data } = await getData();
+    const data = await getData();
+    if (!data) {
+      return;
+    }
+
     const currentState = {
       run: !data['bd-heater-run'],
       heaters: [
@@ -75,7 +79,8 @@ async function loop() {
     // stop if not in period or period says stop
     if (!currentPeriod || !currentPeriod.run) {
       if (currentState.run) {
-        executePeriod(stateFlags, 0);
+        // back to off immediately:
+        //executePeriod(stateFlags, 0);
         setTimeout(() => {
           runCommand('');
         }, RELAY_SWITCH_DELAY * 6);
@@ -145,18 +150,24 @@ const isCurrentPeriod = period => {
 };
 
 const executePeriod = (stateFlags, periodFlags) => {
-  const arrayToExecute = arrayFromMask(stateFlags);
+  //const arrayToExecute = arrayFromMask(stateFlags);
+  // back to off immediately:
+  const arrayToExecute = arrayFromMask(stateFlags & periodFlags);
+  const commandStringToExecute = createCommandStringFromArray(arrayToExecute);
+  runCommand(commandStringToExecute);
+
   const periodArray = arrayFromMask(periodFlags);
 
-  arrayToExecute.forEach((heater, index) => {
-    if (!arrayToExecute[index] !== !periodArray[index]) {
-      arrayToExecute[index] = periodArray[index];
+  for (let i = 0; i < 6; i++) {
+    if (!arrayToExecute[i] !== !periodArray[i]) {
+      arrayToExecute[i] = periodArray[i];
       const commandStringToExecute = createCommandStringFromArray(arrayToExecute);
       setTimeout(() => {
         runCommand(commandStringToExecute);
-      }, RELAY_SWITCH_DELAY * index);
+      }, RELAY_SWITCH_DELAY * i);
     }
-  });
+  }
+
 };
 
 const createCommandStringFromArray = maskArray => {
@@ -178,7 +189,11 @@ const runCommand = (commandString = '') => {
 };
 
 const getData = async () => {
-  const collector = await Collector.findOne().sort('-_id');
-
-  return collector.toJSON();
+  try {
+    const response = await axios.get('http://192.168.1.102:40102');
+    return response.data && response.data.data;
+  } catch(err) {
+    console.error('Get data HTTP issue');
+    return false;
+  }
 };
