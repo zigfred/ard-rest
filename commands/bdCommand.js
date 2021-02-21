@@ -62,7 +62,8 @@ async function loop() {
         !data['bd-heater-5'],
         !data['bd-heater-6']
       ]
-    }
+    };
+    const stateFlags = createMaskFromArray(currentState.heaters);
 
     // stop if command disabled
     if (!command || !command.enabled) {
@@ -74,12 +75,14 @@ async function loop() {
     // stop if not in period or period says stop
     if (!currentPeriod || !currentPeriod.run) {
       if (currentState.run) {
-        commandStopAll();
+        executePeriod(stateFlags, 0);
+        setTimeout(() => {
+          runCommand('');
+        }, RELAY_SWITCH_DELAY * 6);
       }
       return;
     }
 
-    const stateFlags = createMaskFromArray(currentState.heaters);
     const periodFlags = createMaskFromArray(currentPeriod.heaterSwitcher);
 
     // skip if already in target state
@@ -88,7 +91,7 @@ async function loop() {
     }
 
     // run and enable additional heaters
-    commandExecute(stateFlags, periodFlags);
+    executePeriod(stateFlags, periodFlags);
 
   } catch (err) {
     console.error(err);
@@ -141,37 +144,28 @@ const isCurrentPeriod = period => {
   return minutesStart <= minutesNow && minutesNow <= minutesStop;
 };
 
-const commandExecute = (stateFlags, periodFlags) => {
-  let runCount = 1;
-  const stateWithDisabledFlags = stateFlags & periodFlags;
+const executePeriod = (stateFlags, periodFlags) => {
+  const arrayToExecute = arrayFromMask(stateFlags);
+  const periodArray = arrayFromMask(periodFlags);
 
-  let initCommandString = createCommandStringFromFlags(stateWithDisabledFlags);
-  runCommand(initCommandString);
-
-  const heatersToEnable = arrayFromMask(stateWithDisabledFlags ^ periodFlags);
-  heatersToEnable.forEach((heater, index) => {
-    if (heater) {
-      initCommandString += '-h' + (index + 1);
-      let stepString = initCommandString;
+  arrayToExecute.forEach((heater, index) => {
+    if (!arrayToExecute[index] !== !periodArray[index]) {
+      arrayToExecute[index] = periodArray[index];
+      const commandStringToExecute = createCommandStringFromArray(arrayToExecute);
       setTimeout(() => {
-        runCommand(stepString);
-      }, RELAY_SWITCH_DELAY * runCount++);
+        runCommand(commandStringToExecute);
+      }, RELAY_SWITCH_DELAY * index);
     }
   });
 };
-const createCommandStringFromFlags = flags => {
-  const maskArray = arrayFromMask(flags);
+
+const createCommandStringFromArray = maskArray => {
   return maskArray.reduce((memo, heater, index) => {
     if (heater) {
       memo += '-h' + (index + 1);
     }
     return memo;
   }, 'run');
-};
-
-
-const commandStopAll = () => {
-  runCommand();
 };
 
 const runCommand = (commandString = '') => {
