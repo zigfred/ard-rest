@@ -13,13 +13,21 @@ exports.owm = {
         $gte: new Date(now.getFullYear(), now.getMonth(), now.getDate())
       }
     })
+    .lean()
     .exec();
 
     const dataWithHeatLoss = data.map(item => {
+      const { data: { avgTFL, avgTemp }} = item;
+      const heatLossTFL = calcHeatKW(avgTFL, heatTargetTemp, heatLossHourlyByDegree);
+      const heatLossTemp = calcHeatKW(avgTemp, heatTargetTemp, heatLossHourlyByDegree);
+
       return {
         ...item,
-        heatLossTFL: calcHeatKW(item.avgTFL, heatTargetTemp, heatLossHourlyByDegree),
-        heatLossTemp: calcHeatKW(item.avgTemp, heatTargetTemp, heatLossHourlyByDegree)
+        data: {
+          ...item.data,
+          heatLossTFL,
+          heatLossTemp
+        }
       }
     });
 
