@@ -3,13 +3,21 @@ var Schema = mongoose.Schema;
 
 
 var SettingsSchema = new Schema({
-  collectionInterval: {
-    type: Number,
-    default: 10000
-  },
   defaultRuleInterval: {
     type: Number,
     default: 5000
+  },
+  collectionInterval: {
+    type: Number,
+    default: 15
+  },
+  heatTargetTemp: {
+    type: Number,
+    default: 13
+  },
+  heatLossHourlyByDegree: {
+    type: Number,
+    default: 160
   }
 });
 
