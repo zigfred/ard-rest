@@ -10,8 +10,6 @@ const url = `http://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lo
 
 const ONE_HOUR_MS = 60 * 60 * 1000;
 const ONE_DAY_MS = ONE_HOUR_MS * 24;
-const TARGET_TEMP = 13;
-const HEAT_LOSS_IN_HOUR = 200;
 
 const WF_OWM_ALIAS = 'wf-owm';
 
@@ -74,25 +72,16 @@ const saveFwData = async (data) => {
 const getTFLData = (list, appendDaysCount) => {
   const sumTFLK = getSumTFL(list, appendDaysCount);
   const avgTFL = convertSumTemp(sumTFLK);
-  const heatLossTFL = calcHeatKW(avgTFL);
   return {
-    avgTFL,
-    heatLossTFL
+    avgTFL
   }
 }
 const getTempData = (list, appendDaysCount) => {
   const sumTempK = getSumTemp(list, appendDaysCount);
   const avgTemp = convertSumTemp(sumTempK);
-  const heatLossTemp = calcHeatKW(avgTemp);
   return {
-    avgTemp,
-    heatLossTemp
+    avgTemp
   }
-}
-
-const calcHeatKW = (avgTemp) => {
-  const deltaTemp = TARGET_TEMP - avgTemp;
-  return deltaTemp * HEAT_LOSS_IN_HOUR * 24 / 1000;
 }
 
 const convertSumTemp = sumTempK => sumTempK / 8 - 273.15;

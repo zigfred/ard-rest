@@ -16,7 +16,8 @@ var start = async function() {
 
     loop();
 
-    setInterval(loop, settings.collectionInterval);
+    setInterval(loop, settings.collectionInterval * 1000);
+    // TODO: reload interval each interval
 
   } catch (err) {
     console.error(err);
