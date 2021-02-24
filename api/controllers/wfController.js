@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
 
 exports.owm = {
   getData: async function(req, res) {
-    const dataWithHeatLoss = getOWMData();
+    const dataWithHeatLoss = await getOWMData();
 
     res.json(dataWithHeatLoss);
   }
