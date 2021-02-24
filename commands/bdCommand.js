@@ -60,6 +60,10 @@ async function calcHeating() {
   if (!command.settings.skynet || !command.enabled) {
     return;
   }
+  const now = new Date();
+  if (now.getHours() < 21 || 23 < now.getHours()) {
+    return;
+  }
 
   // get heal loss
   const heatLossTFL = await wfController.getNextDayHeatLoss();
