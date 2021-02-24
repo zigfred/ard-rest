@@ -3,8 +3,9 @@ const axios = require('../config/axios').forCommand,
   mongoUtil = require("../mongo/mongoUtil"),
   Settings = mongoose.model('Settings'),
   Commands = mongoose.model('Commands'),
-  Collector = mongoose.model('Collector');
+  wfController = require('../api/controllers/wfController');
 
+const COMMAND_ALIAS = 'bd';
 const RELAY_SWITCH_DELAY = 3000;
 
 const start = async function() {
@@ -49,8 +50,160 @@ const select = [
 ];
 
 async function loop() {
+  await calcHeating();
+  await heaterRunner();
+}
+
+async function calcHeating() {
+  const command = await Commands.findOne({ alias: COMMAND_ALIAS });
+
+  if (!command.settings.skynet || !command.enabled) {
+    return;
+  }
+
+  // get heal loss
+  const heatLossTFL = await wfController.getNextDayHeatLoss();
+
+
+  const calcDiffKw = calculateDiff(heatLossTFL, command);
+  switch (true) {
+    case calcDiffKw === 0: // calc is about full load
+      await setFullLoadPeriods(command); // can be replaced by setLessNightPeriods
+      break;
+    case calcDiffKw < 0: // calc if less
+      await setLessNightPeriods(calcDiffKw, command);
+      break;
+    case calcDiffKw > 0: // calc if more
+      await setFullLoadPeriods(command); // can be replaced by setLessNightPeriods
+      //await addDayHeatingPeriods(calcDiff, command); // TODO
+      break;
+  }
+}
+
+async function setLessNightPeriods(calcDiff, command) {
+  const { settings: { heaters } } = command;
+
+  const targetHeat = calculateTargetHeatAM(calcDiff, command);
+  const minutePower = heaters.reduce((memo, h) => memo + h / 1000 / 60, 0);
+  const minutesToHeat = Math.floor(targetHeat / minutePower);
+  if (minutesToHeat < 15) {
+    return;
+  }
+  const startMinute = 7 * 60 - minutesToHeat;
+
+  command.settings.periods = [
+    new Period()
+    .setStartTime(23, 0)
+    .setStopTime(23, 59)
+    .setHeaters(heaters)
+    .setRun(true)
+    .toJSON(),
+    new Period()
+    .setStartTime(0, startMinute)
+    .setStopTime(7, 0)
+    .setHeaters(heaters)
+    .setRun(true)
+    .toJSON()
+  ];
+
+  command.markModified('settings');
+  await command.save();
+}
+
+function calculateTargetHeatAM(calcDiff, command) {
+  const { settings: { heaters }} = command;
+  const fullHeat7h = heaters.reduce((memo, power) => memo + power / 1000 * 7, 0);
+  return fullHeat7h - Math.abs(calcDiff);
+}
+
+async function setFullLoadPeriods(command) {
+  const { settings: { heaters }} = command;
+
+  command.settings.periods = [
+    new Period()
+      .setStartTime(23, 0)
+      .setStopTime(23, 59)
+      .setHeaters(heaters)
+      .setRun(true)
+      .toJSON(),
+    new Period()
+      .setStartTime(0, 0)
+      .setStopTime(7, 0)
+      .setHeaters(heaters)
+      .setRun(true)
+      .toJSON()
+  ];
+
+  command.markModified('settings');
+  await command.save();
+}
+
+class Period {
+  static create(state = {}) {
+    return new Period(state);
+  }
+  constructor(state = {}) {
+    this.state = {
+      startTime: state.startTime,
+      stopTime: state.stopTime,
+      run: state.run,
+      heaterSwitcher: state.heaterSwitcher
+    };
+  }
+
+  setStartTime(hour, minute) {
+    const time = new Date();
+    time.setHours(hour, minute, 0, 0);
+    this.state.startTime = time;
+    return this;
+  }
+  setStopTime(hour, minute) {
+    const time = new Date();
+    time.setHours(hour, minute, 0, 0);
+    this.state.stopTime = time;
+    return this;
+  }
+
+  setRun(run) {
+    this.state.run = !!run;
+    return this;
+  }
+
+  setHeaters(heaters) {
+    this.state.heaterSwitcher = heaters.map(heater => !!heater);
+    return this;
+  }
+
+  validate() {
+    return false;//TODO
+  }
+
+  toJSON() {
+    if (this.validate()) {
+      return null;
+    }
+    return JSON.parse(JSON.stringify(this.state));
+  }
+}
+
+function calculateDiff(heatLossTFL, command) {
+  const { settings: { heaters }} = command;
+
+  const fullHeat8h = heaters.reduce((memo, power) => memo + power / 1000 * 8, 0);
+
+  const diff = heatLossTFL - fullHeat8h;
+
+  if (Math.abs(diff) <= 3) {
+    return 0;
+  }
+
+  return diff;
+}
+
+
+async function heaterRunner() {
   try {
-    const command = await Commands.findOne({ alias: 'bd' });
+    const command = await Commands.findOne({ alias: COMMAND_ALIAS });
     const data = await getData();
     if (!data) {
       return;
