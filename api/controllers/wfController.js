@@ -6,7 +6,9 @@ exports.owm = {
   getData: async function(req, res) {
     const dataWithHeatLoss = await getOWMData();
 
-    res.json(dataWithHeatLoss);
+    res.json({
+      data: dataWithHeatLoss
+    });
   }
 };
 
