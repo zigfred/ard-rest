@@ -110,9 +110,8 @@ const filterTargetDayByTime = (item) => {
 }
 
 const filterTargetDay = (item, appendDaysCount = 1) => {
-  const currentTime = new Date();
-  const currentDay = currentTime.getDate();
-  const forecastTime = new Date(item.dt * 1000);
-  const forecastDay = forecastTime.getDate();
-  return currentDay + appendDaysCount === forecastDay;
+  const date = new Date();
+  date.setDate(date.getDate() + appendDaysCount);
+  const forecastDate = new Date(item.dt * 1000);
+  return date.toDateString() === forecastDate.toDateString();
 }
