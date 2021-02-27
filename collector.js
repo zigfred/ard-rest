@@ -1,4 +1,5 @@
 const axios = require('./config/axios').forCollector,
+  ping = require('ping'),
   mongoose = require('mongoose'),
   mongoUtil = require("./mongo/mongoUtil"),
   Settings = mongoose.model('Settings'),
@@ -8,7 +9,7 @@ const axios = require('./config/axios').forCollector,
 
 
 
-var start = async function() {
+const start = async function() {
 
   try {
     await mongoUtil.connect();
@@ -30,26 +31,28 @@ start();
 async function loop() {
 
   try {
-    let arduinos = await Arduinos.find({});
+    const arduinos = await Arduinos.find({});
     if (!arduinos || !arduinos.length ) {
       console.log("Arduinos list empty. Done.");
       return;
     }
-    let resultAll = await Promise.all(arduinos.map(getDataFromArduino));
+    const resultAll = await Promise.all(arduinos.map(getDataFromArduino));
     if (!resultAll || !resultAll.length) {
       console.log("Nothing to save. Done.");
       return;
     }
 
-    let dataObj = collectDataFromArduino(resultAll);
+    const dataObj = collectDataFromArduino(resultAll);
     if (Object.keys(dataObj).length === 0) {
       console.log("Nothing to save. Done.");
       return;
     }
 
-    let collector = new Collector({data: dataObj});
+    dataObj.powerCheck = await powerCheck();
+
+    const collector = new Collector({data: dataObj});
     collector.markModified('data');
-    collector.save(function (err) {
+    await collector.save(function (err) {
       if (err) {
         console.error("save Collector failed with ", err);
       }
@@ -60,6 +63,16 @@ async function loop() {
   } catch (err) {
     console.log("all: ", err);
   }
+}
+
+async function powerCheck() {
+  const powerHost = '192.168.1.92';
+  const powerCheck = await ping.promise.probe(powerHost, {
+    timeout: 1,
+    min_reply: 1
+  });
+
+  return powerCheck.alive;
 }
 
 function getDataFromArduino(arduino) {
