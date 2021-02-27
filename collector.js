@@ -48,7 +48,8 @@ async function loop() {
       return;
     }
 
-    dataObj.powerCheck = await powerCheck();
+    dataObj.powerCheck = await pingCheck('192.168.1.92');
+    dataObj.inetCheck = await pingCheck('8.8.8.8');
 
     const collector = new Collector({data: dataObj});
     collector.markModified('data');
@@ -65,14 +66,13 @@ async function loop() {
   }
 }
 
-async function powerCheck() {
-  const powerHost = '192.168.1.92';
-  const powerCheck = await ping.promise.probe(powerHost, {
+async function pingCheck(host) {
+  const pingResult = await ping.promise.probe(host, {
     timeout: 1,
     min_reply: 1
   });
 
-  return powerCheck.alive ? 1 : 0;
+  return pingResult.alive ? 1 : 0;
 }
 
 function getDataFromArduino(arduino) {
