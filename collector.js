@@ -72,7 +72,7 @@ async function powerCheck() {
     min_reply: 1
   });
 
-  return powerCheck.alive;
+  return powerCheck.alive ? 1 : 0;
 }
 
 function getDataFromArduino(arduino) {
