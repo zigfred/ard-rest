@@ -69,7 +69,7 @@ async function loop() {
 async function pingCheck(host) {
   const pingResult = await ping.promise.probe(host, {
     timeout: 1,
-    min_reply: 1
+    min_reply: 2
   });
 
   return pingResult.alive ? 1 : 0;
