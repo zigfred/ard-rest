@@ -355,17 +355,22 @@ const getData = async () => {
   } catch(err) {
     console.error('Get data HTTP issue, counter: ', silenceCounter);
     if (++silenceCounter > 10) {
-      resetBD();
-      silenceCounter = 0;
+      try {
+        await resetBD();
+        silenceCounter = 0;
+      } catch(error) {
+      }
     }
     return false;
   }
 };
 
-function resetBD() {
-  axios.post('http://192.168.1.60/console/reset').then(result => {
+async function resetBD() {
+  try {
+    const result = axios.post('http://192.168.1.60/console/reset');
     console.log('BD reset result: ', result.statusText);
-  }).catch(error => {
+  } catch(error) {
     console.error('BD reset result: ', error.code);
-  });
+    throw Error(error);
+  }
 }
