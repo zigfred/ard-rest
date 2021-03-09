@@ -8,6 +8,8 @@ const axios = require('../config/axios').forCommand,
 const COMMAND_ALIAS = 'bd';
 const RELAY_SWITCH_DELAY = 3000;
 
+let silenceCounter = 0;
+
 const start = async function() {
 
   try {
@@ -350,7 +352,22 @@ const getData = async () => {
     const response = await axios.get('http://192.168.1.102:40102');
     return response.data && response.data.data;
   } catch(err) {
-    console.error('Get data HTTP issue');
+    console.error('Get data HTTP issue, counter: ', silenceCounter);
+    if (++silenceCounter > 10) {
+      resetBD();
+      silenceCounter = 0;
+    }
     return false;
   }
 };
+
+function resetBD() {
+  axios.post('http://192.168.1.102:3060/console/reset').then(result => {
+    console.log('BD reset result: ', result.statusText);
+  }).catch(error => {
+    console.error('BD reset result: ', error.code);
+  });
+}
+
+// TODO check periods 7-8 and 22-23
+// off time 6.55
