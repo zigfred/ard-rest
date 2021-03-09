@@ -362,12 +362,9 @@ const getData = async () => {
 };
 
 function resetBD() {
-  axios.post('http://192.168.1.102:3060/console/reset').then(result => {
+  axios.post('http://192.168.1.60/console/reset').then(result => {
     console.log('BD reset result: ', result.statusText);
   }).catch(error => {
     console.error('BD reset result: ', error.code);
   });
 }
-
-// TODO check periods 7-8 and 22-23
-// off time 6.55
