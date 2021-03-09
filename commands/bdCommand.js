@@ -341,15 +341,16 @@ const createCommandStringFromArray = maskArray => {
 const runCommand = (commandString = '') => {
   const url = 'http://192.168.1.102:40102/command?' + commandString;
   return axios.get(url).then(result => {
-    console.log('HTTP call success ', commandString);
+    console.log('HTTP call success \'', commandString, '\'');
   }).catch(error => {
-    console.log('HTTP call error.', commandString);
+    console.log('HTTP call error \'', commandString, '\'', error.code);
   });
 };
 
 const getData = async () => {
   try {
     const response = await axios.get('http://192.168.1.102:40102');
+    silenceCounter = 0;
     return response.data && response.data.data;
   } catch(err) {
     console.error('Get data HTTP issue, counter: ', silenceCounter);
