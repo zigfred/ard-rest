@@ -367,7 +367,7 @@ const getData = async () => {
 
 async function resetBD() {
   try {
-    const result = axios.post('http://192.168.1.60/console/reset');
+    const result = await axios.post('http://192.168.1.60/console/reset');
     console.log('BD reset result: ', result.statusText);
   } catch(error) {
     console.error('BD reset result: ', error.code);
