@@ -3,6 +3,7 @@ const axios = require('../config/axios').forCommand,
   mongoUtil = require("../mongo/mongoUtil"),
   Settings = mongoose.model('Settings'),
   Commands = mongoose.model('Commands'),
+  Collector = mongoose.model('Collector');
   wfController = require('../api/controllers/wfController');
 
 const COMMAND_ALIAS = 'bd';
@@ -348,21 +349,46 @@ const runCommand = (commandString = '') => {
 };
 
 const getData = async () => {
+  let data;
   try {
-    const response = await axios.get('http://192.168.1.102:40102');
+    data = await getDataFromMC();
     silenceCounter = 0;
-    return response.data && response.data.data;
   } catch(err) {
-    console.error('Get data HTTP issue, counter: ', silenceCounter);
-    if (++silenceCounter > 10) {
-      try {
-        await resetBD();
-        silenceCounter = 0;
-      } catch(error) {
+    data = await getDataFromDB();
+    if (!data) {
+      console.error('Get data issue, counter: ', silenceCounter);
+      if (++silenceCounter > 10) {
+        try {
+          await resetBD();
+          silenceCounter = 0;
+        } catch(error) {
+        }
       }
+      return false;
     }
-    return false;
   }
+  silenceCounter = 0;
+  return data;
+};
+
+const getDataFromMC = async () => {
+  const response = await axios.get('http://192.168.1.102:40102');
+  return response.data && response.data.data;
+};
+
+const getDataFromDB = async () => {
+  const collector = await Collector
+    .findOne()
+    .sort('-_id')
+    .exec();
+
+  const isDataExist = collector.data && (typeof collector.data['bd-heater-run'] !== 'undefined');
+  const now = new Date();
+  if ((now - collector.time) / 1000 < 31 && isDataExist) {
+    return collector.data;
+  }
+
+  return false;
 };
 
 async function resetBD() {
