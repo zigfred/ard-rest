@@ -61,11 +61,11 @@ async function calcHeating() {
   const command = await Commands.findOne({ alias: COMMAND_ALIAS });
 
   if (!command.settings.skynet || !command.enabled) {
-    return;
+    return Promise.resolve();
   }
   const now = new Date();
-  if (now.getHours() < 21 || 23 < now.getHours()) {
-    return;
+  if (21 <= now.getHours() && now.getHours() <= 23) {
+    return Promise.resolve();
   }
 
   // get heal loss
@@ -77,6 +77,9 @@ async function calcHeating() {
     case calcDiffKw === 0: // calc is about full load
       await setFullLoadPeriods(command); // can be replaced by setLessNightPeriods
       break;
+    case calcDiffKw < -50: // calc if less
+      await setLessNightPeriodsFromMidnight(calcDiffKw, command);
+      break;
     case calcDiffKw < 0: // calc if less
       await setLessNightPeriods(calcDiffKw, command);
       break;
@@ -85,6 +88,7 @@ async function calcHeating() {
       //await addDayHeatingPeriods(calcDiff, command); // TODO
       break;
   }
+  return Promise.resolve();
 }
 
 async function setLessNightPeriods(calcDiff, command) {
@@ -108,6 +112,35 @@ async function setLessNightPeriods(calcDiff, command) {
     new Period()
     .setStartTime(0, startMinute)
     .setStopTime(7, 0)
+    .setHeaters(heaters)
+    .setRun(true)
+    .toJSON()
+  ];
+
+  command.markModified('settings');
+  await command.save();
+}
+
+async function setLessNightPeriodsFromMidnight(calcDiff, command) {
+  const { settings: { heaters } } = command;
+
+  const targetHeat = calculateTargetHeatAM(calcDiff, command);
+  const minutePower = heaters.reduce((memo, h) => memo + h / 1000 / 60, 0);
+  const minutesToHeat = Math.floor(targetHeat / minutePower);
+  if (minutesToHeat < 15) {
+    return;
+  }
+
+  command.settings.periods = [
+    new Period()
+    .setStartTime(23, 0)
+    .setStopTime(23, 59)
+    .setHeaters(heaters)
+    .setRun(true)
+    .toJSON(),
+    new Period()
+    .setStartTime(0, 0)
+    .setStopTime(0, minutesToHeat)
     .setHeaters(heaters)
     .setRun(true)
     .toJSON()
@@ -384,7 +417,7 @@ const getDataFromDB = async () => {
 
   const isDataExist = collector.data && (typeof collector.data['bd-heater-run'] !== 'undefined');
   const now = new Date();
-  if ((now - collector.time) / 1000 < 31 && isDataExist) {
+  if ((now - collector.time) / 1000 < 25 && isDataExist) {
     return collector.data;
   }
 
