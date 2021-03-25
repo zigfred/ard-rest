@@ -70,34 +70,34 @@ const saveFwData = async (data) => {
 }
 
 const getTFLData = (list, appendDaysCount) => {
-  const sumTFLK = getSumTFL(list, appendDaysCount);
-  const avgTFL = convertSumTemp(sumTFLK);
+  const avgTFLK = getAvgTempK(list, appendDaysCount);
+  const avgTFL = convertSumTempK(avgTFLK);
   return {
     avgTFL
   }
 }
 const getTempData = (list, appendDaysCount) => {
-  const sumTempK = getSumTemp(list, appendDaysCount);
-  const avgTemp = convertSumTemp(sumTempK);
+  const avgTempK = getAvgTFLK(list, appendDaysCount);
+  const avgTemp = convertSumTempK(avgTempK);
   return {
     avgTemp
   }
 }
 
-const convertSumTemp = sumTempK => sumTempK / 8 - 273.15;
+const convertSumTempK = tempK => tempK - 273.15;
 
-const getSumTemp = (list, appendDaysCount) => {
+const getAvgTempK = (list, appendDaysCount) => {
   const filter = item => filterTargetDay(item, appendDaysCount);
-  return list.filter(filter).map(mapTemp).reduce(reduceSum, 0);
+  return list.filter(filter).map(mapTemp).reduce(reduceAvg, 0);
 }
-const getSumTFL = (list, appendDaysCount) => {
+const getAvgTFLK = (list, appendDaysCount) => {
   const filter = item => filterTargetDay(item, appendDaysCount);
-  return list.filter(filter).map(mapTempFeelsLike).reduce(reduceSum, 0);
+  return list.filter(filter).map(mapTempFeelsLike).reduce(reduceAvg, 0);
 }
 
 const mapTemp = (item) => item.main.temp;
 const mapTempFeelsLike = (item) => item.main.feels_like;
-const reduceSum = (res, t) => res + t;
+const reduceAvg = (res, t) => (res + t) / 2;
 
 const filterTargetDayByTime = (item) => {
   // for other hour, not 0-24 periods
