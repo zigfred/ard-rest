@@ -70,14 +70,14 @@ const saveFwData = async (data) => {
 }
 
 const getTFLData = (list, appendDaysCount) => {
-  const avgTFLK = getAvgTempK(list, appendDaysCount);
+  const avgTFLK = getAvgTFLK(list, appendDaysCount);
   const avgTFL = convertSumTempK(avgTFLK);
   return {
     avgTFL
   }
 }
 const getTempData = (list, appendDaysCount) => {
-  const avgTempK = getAvgTFLK(list, appendDaysCount);
+  const avgTempK = getAvgTempK(list, appendDaysCount);
   const avgTemp = convertSumTempK(avgTempK);
   return {
     avgTemp
