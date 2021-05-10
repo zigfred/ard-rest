@@ -3,7 +3,7 @@ var mongoose = require('mongoose'),
 
 exports.get = function(req, res) {
   Collector.findOne()
-  .select('data.powerCheck')
+  .select('data.powerCheck, data.stationEuroTankCheck')
   .sort('-_id')
   .exec( function(err, data) {
     if (err)
