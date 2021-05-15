@@ -7,7 +7,7 @@ module.exports = function(app) {
 
   // stations status Routes
   app.route('/ping/esp001')
-    .get(heartbeat.get);
+    .get(heartbeat.esp001get);
 
 
 };

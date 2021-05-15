@@ -12,7 +12,7 @@ exports.get = function(req, res) {
   });
 };
 
-exports.get = function(req, res) {
+exports.esp001get = function(req, res) {
   Collector.findOne()
   .select(['data.et-tank-full', 'data.et-tank-empty'])
   .sort('-_id')
