@@ -1,8 +1,12 @@
 module.exports = function(app) {
   var heartbeat = require('../controllers/heartbeatController');
 
-  // boilerBack Routes
+  // general system status Routes
   app.route('/')
+    .get(heartbeat.get);
+
+  // stations status Routes
+  app.route('/ping/esp001')
     .get(heartbeat.get);
 
 
