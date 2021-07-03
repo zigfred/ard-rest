@@ -49,7 +49,7 @@ async function loop() {
     }
 
     dataObj.powerCheck = await pingCheck('192.168.1.92');
-    dataObj.stationEuroTankCheck = await pingCheck('192.168.1.71');
+    dataObj.stationEuroTankCheck = await pingCheck('192.168.1.73');
     dataObj.inetCheck = await pingCheck('8.8.8.8');
 
     const collector = new Collector({data: dataObj});

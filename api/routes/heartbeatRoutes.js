@@ -5,6 +5,7 @@ module.exports = function(app) {
   app.route('/')
     .get(heartbeat.get);
 
+  // outdated
   // stations status Routes
   app.route('/ping/esp001')
     .get(heartbeat.esp001get);
