@@ -19,7 +19,6 @@ exports.euroTank = {
     collector.save();
 
     const serverState = await Esps.findOne({ name: 'euroTank' });
-    console.log(serverState);
     res.json(serverState);
   }
 };
