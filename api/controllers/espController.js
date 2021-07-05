@@ -20,5 +20,24 @@ exports.euroTank = {
 
     const serverState = await Esps.findOne({ name: 'euroTank' });
     res.json(serverState);
+  },
+  updateCommand: async function(req, res) {
+    try {
+      const { irrigate = false, fill = false } = req.params;
+
+      const serverState = await Esps.findOne({ name: 'euroTank' });
+
+      serverState.state = {
+        ...serverState.state,
+        irrigate,
+        fill
+      };
+
+      const result = await serverState.save();
+      res.json(result);
+    } catch(err) {
+      console.error(err);
+      res.code(500).send(err);
+    }
   }
 };
