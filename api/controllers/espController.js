@@ -23,14 +23,14 @@ exports.euroTank = {
   },
   updateCommand: async function(req, res) {
     try {
-      const { irrigate = 0, fill = 0 } = req.query;
+      const { irrigate, fill } = req.query;
 
       const serverState = await Esps.findOne({ name: 'euroTank' });
 
       serverState.state = {
         ...serverState.state,
-        irrigate,
-        fill
+        irrigate: irrigate ? 1 : 0,
+        fill: fill ? 1 : 0
       };
 
       const result = await serverState.save();
