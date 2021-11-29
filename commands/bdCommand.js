@@ -37,12 +37,27 @@ const select = [
   'data.bd-trans-1',
   'data.bd-trans-2',
   'data.bd-trans-3',
+  'data.bd-trans-4',
+  'data.bd-trans-5',
+  'data.bd-trans-6',
+  'data.bd-trans-pump',
   'data.bd-flow',
   'data.28ff4b5662180392', //bd-temp-case
-  'data.28ff69250117054d', //bd-temp-out
+  'data.28ff69250117054d', //bd-temp-in
+  'data.280200079540012e', //bd-temp-in2
+  'data.280c0107165d0113', //bd-temp-out
+
   'data.28ff0579b516038c', //ta-temp-top
   'data.28ffcf09b316036a', //ta-temp-middle
   'data.28ff74f0b216031c', //ta-temp-bottom
+  'data.28ff14170117035e', //ta-temp-wall
+
+  'data.2802000781490148', //bt-temp-top
+  'data.281900005906008c', //bt-temp-middle
+  'data.280700078103023d', //bt-temp-bottom2
+  'data.28030000761f008d', //bt-temp-bottom
+
+  'data.bd-heater-pump',
   'data.bd-heater-run',
   'data.bd-heater-1',
   'data.bd-heater-2',
@@ -240,7 +255,8 @@ function calculateDiff(heatLossTFL, command) {
   return diff;
 }
 
-
+let stoppedByOverheatingTimestamp = null;
+const OVERHEATING_DELAY = 30 * 60 * 1000; // 30m
 async function heaterRunner() {
   try {
     const command = await Commands.findOne({ alias: COMMAND_ALIAS });
@@ -262,9 +278,31 @@ async function heaterRunner() {
     };
     const stateFlags = createMaskFromArray(currentState.heaters);
 
+    if (stoppedByOverheatingTimestamp) {
+      if (stoppedByOverheatingTimestamp + OVERHEATING_DELAY < +new Date()) {
+        stoppedByOverheatingTimestamp = null;
+        console.log('Overheating delay finished.');
+      }
+      if (currentState.run) {
+        setTimeout(() => {
+          runCommand('');
+        }, RELAY_SWITCH_DELAY * 6);
+      }
+    }
+
     // stop if command disabled
     if (!command || !command.enabled) {
       return;
+    }
+
+    const bdTempOut = data['280c0107165d0113'];
+    const taTempTop = data['28ff0579b516038c'];
+    if (bdTempOut > 70 || taTempTop > 50) {
+      console.log('Overheating detected, stop heating for 30m.');
+      setTimeout(() => {
+        runCommand('');
+      }, RELAY_SWITCH_DELAY * 6);
+      stoppedByOverheatingTimestamp = +new Date();
     }
 
     const currentPeriod = getCurrentPeriod(command);
@@ -369,7 +407,7 @@ const createCommandStringFromArray = maskArray => {
       memo += '-h' + (index + 1);
     }
     return memo;
-  }, 'run');
+  }, 'run-pump');
 };
 
 const runCommand = (commandString = '') => {
@@ -390,14 +428,15 @@ const getData = async () => {
     data = await getDataFromDB();
     if (!data) {
       console.error('Get data issue, counter: ', silenceCounter);
-      if (++silenceCounter > 10) {
-        try {
-          await resetBD();
-          silenceCounter = 0;
-        } catch(error) {
-        }
-      }
-      return false;
+      return false; // skip reset now, esp-link is not connected to mega
+      // if (++silenceCounter > 10) {
+      //   try {
+      //     await resetBD();
+      //     silenceCounter = 0;
+      //   } catch(error) {
+      //   }
+      // }
+      // return false;
     }
   }
   silenceCounter = 0;

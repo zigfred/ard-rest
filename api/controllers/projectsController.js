@@ -121,13 +121,27 @@ exports.bdControl = {
       'data.bd-trans-1',
       'data.bd-trans-2',
       'data.bd-trans-3',
+      'data.bd-trans-4',
+      'data.bd-trans-5',
+      'data.bd-trans-6',
+      'data.bd-trans-pump',
       'data.bd-flow',
       'data.28ff4b5662180392', //bd-temp-case
-      'data.28ff69250117054d', //bd-temp-out
+      'data.28ff69250117054d', //bd-temp-in
+      'data.280200079540012e', //bd-temp-in2
+      'data.280c0107165d0113', //bd-temp-out
+
       'data.28ff0579b516038c', //ta-temp-top
       'data.28ffcf09b316036a', //ta-temp-middle
       'data.28ff74f0b216031c', //ta-temp-bottom
-      'data.28ff14170117035e', //ta-temp-bottom
+      'data.28ff14170117035e', //ta-temp-wall
+
+      'data.2802000781490148', //bt-temp-top
+      'data.281900005906008c', //bt-temp-middle
+      'data.280700078103023d', //bt-temp-bottom2
+      'data.28030000761f008d', //bt-temp-bottom
+
+      'data.bd-heater-pump',
       'data.bd-heater-run',
       'data.bd-heater-1',
       'data.bd-heater-2',
