@@ -266,14 +266,14 @@ async function heaterRunner() {
     }
 
     const currentState = {
-      run: !data['bd-heater-run'],
+      run: data['bd-heater-run'],
       heaters: [
-        !data['bd-heater-1'],
-        !data['bd-heater-2'],
-        !data['bd-heater-3'],
-        !data['bd-heater-4'],
-        !data['bd-heater-5'],
-        !data['bd-heater-6']
+        data['bd-heater-1'],
+        data['bd-heater-2'],
+        data['bd-heater-3'],
+        data['bd-heater-4'],
+        data['bd-heater-5'],
+        data['bd-heater-6']
       ]
     };
     const stateFlags = createMaskFromArray(currentState.heaters);
