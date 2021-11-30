@@ -288,6 +288,7 @@ async function heaterRunner() {
           runCommand('');
         }, RELAY_SWITCH_DELAY * 6);
       }
+      return;
     }
 
     // stop if command disabled
