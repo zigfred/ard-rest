@@ -304,6 +304,7 @@ async function heaterRunner() {
         runCommand('');
       }, RELAY_SWITCH_DELAY * 6);
       stoppedByOverheatingTimestamp = +new Date();
+      return;
     }
 
     const currentPeriod = getCurrentPeriod(command);
