@@ -81,9 +81,9 @@ function isForceInRange(period) {
 const runCommand = (newValue) => {
   const url = 'http://192.168.1.112:40112/' + (newValue ? 'start-heat' : 'stop-heat');
   return axios.get(url).then(result => {
-    console.log('Success ', newValue);
+    console.log('Request succeed, set: ', newValue);
   }).catch(error => {
-    console.log('HTTP call error.');
+    console.log('HTTP call error.', error.code);
   });
 }
 
