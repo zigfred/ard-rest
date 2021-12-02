@@ -43,15 +43,28 @@ async function loop() {
     }
 
     const dataObj = collectDataFromArduino(resultAll);
+    const pingChecks = await Promise.all(arduinos.map(pingCheckArduinos));
+    Object.assign(dataObj, pingChecks.map(a => a[0]));
+
+    //dataObj.powerCheck = await pingCheck('192.168.1.92');
+    //dataObj.stationEuroTankCheck = await pingCheck('192.168.1.73');
+    dataObj['ping-esp-71-dc-reseter'] = await pingCheck('192.168.1.71');
+    dataObj['ping-global-link'] = await pingCheck('8.8.8.8');
+
+
+    dataObj['ping-hkv-80'] = await pingCheck('192.168.1.80');
+    dataObj['ping-hkv-92'] = await pingCheck('192.168.1.92');
+    dataObj['ping-hkv-93'] = await pingCheck('192.168.1.93');
+    dataObj['ping-hkv-94'] = await pingCheck('192.168.1.94');
+    dataObj['ping-hkv-95'] = await pingCheck('192.168.1.95');
+
+    dataObj['ping-hp-supreme-12'] = await pingCheck('192.168.1.181');
+    dataObj['ping-hp-arctic-12'] = await pingCheck('192.168.1.182');
+
     if (Object.keys(dataObj).length === 0) {
       console.log("Nothing to save. Done.");
       return;
     }
-
-    //dataObj.powerCheck = await pingCheck('192.168.1.92');
-    //dataObj.stationEuroTankCheck = await pingCheck('192.168.1.73');
-    dataObj.stationDCReseterCheck = await pingCheck('192.168.1.71');
-    dataObj.inetCheck = await pingCheck('8.8.8.8');
 
     const collector = new Collector({data: dataObj});
     collector.markModified('data');
@@ -75,6 +88,17 @@ async function pingCheck(host) {
   });
 
   return pingResult.alive ? 1 : 0;
+}
+
+async function pingCheckArduinos(arduino) {
+  if (!arduino.saveEnabled) {
+    return {};
+  }
+
+  const result = await pingCheck(arduino.ip);
+  return {
+    ['ping-' + arduino.label]: result
+  };
 }
 
 function getDataFromArduino(arduino) {
