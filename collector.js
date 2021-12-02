@@ -44,7 +44,7 @@ async function loop() {
 
     const dataObj = collectDataFromArduino(resultAll);
     const pingChecks = await Promise.all(arduinos.map(pingCheckArduinos));
-    Object.assign(dataObj, pingChecks.map(a => a[0]));
+    Object.assign.apply(null, [dataObj, ...pingChecks]);
 
     //dataObj.powerCheck = await pingCheck('192.168.1.92');
     //dataObj.stationEuroTankCheck = await pingCheck('192.168.1.73');
