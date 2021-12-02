@@ -3,12 +3,22 @@ var mongoose = require('mongoose'),
 
 exports.get = function(req, res) {
   Collector.findOne()
-  .select(['data.powerCheck', 'data.stationEuroTankCheck'])
   .sort('-_id')
   .exec( function(err, data) {
     if (err)
       res.send(err);
-    res.json(data);
+
+    const resultData = data.toObject().data;
+
+    const filteredData = Object.keys(resultData)
+      .reduce((memo, key) => {
+        if (key.search(/^ping-/) !== -1) {
+          memo[key] = resultData[key];
+        }
+        return memo;
+    }, {});
+
+    res.json(filteredData);
   });
 };
 
