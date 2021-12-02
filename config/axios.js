@@ -3,8 +3,10 @@ const axios = require("axios"),
 
 
 exports.forCollector = axios.create({
-  timeout: config.axios.collectorTimeout
+  timeout: config.axios.collectorTimeout,
+  headers: {'Connection': 'close'}
 });
 exports.forCommand = axios.create({
-  timeout: config.axios.commandTimeout
+  timeout: config.axios.commandTimeout,
+  headers: {'Connection': 'close'}
 });
