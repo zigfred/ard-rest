@@ -121,10 +121,12 @@ function collectDataFromArduino(allData) {
   return allData.reduce((memo, arduinoResponse) => {
     if (arduinoResponse) {
       const { deviceId, data = {} } = arduinoResponse;
+      if (deviceId) {
+        data['online-' + deviceId] = 1;
+      }
       return {
         ...memo,
         ...data,
-        ['online-' + deviceId]: 1
       };
     }
     return memo;
