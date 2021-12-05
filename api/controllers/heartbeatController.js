@@ -12,7 +12,8 @@ exports.get = function(req, res) {
 
     const filteredData = Object.keys(resultData)
       .reduce((memo, key) => {
-        if (key.search(/^ping-/) !== -1) {
+        const isCheckersFields = key.search(/^(ping|online)-/) !== -1;
+        if (isCheckersFields) {
           memo[key] = resultData[key];
         }
         return memo;
