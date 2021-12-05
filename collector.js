@@ -114,18 +114,21 @@ function getDataFromArduino(arduino) {
     })
     .catch(err => {
       console.log("get", arduinoUri, err.code);
-      return {};
+      return null;
     });
 }
 function collectDataFromArduino(allData) {
-  let data = allData.map(item => {
-    let data = {};
-    if (item && item.data) {
-      data = item.data;
+  return allData.reduce((memo, arduinoResponse) => {
+    if (arduinoResponse) {
+      const { deviceId, data = {} } = arduinoResponse;
+      return {
+        ...memo,
+        ...data,
+        ['online-' + deviceId]: 1
+      };
     }
-    return data;
-  });
-  return Object.assign(...data);
+    return memo;
+  }, {});
 }
 async function saveNewPlaces(dataObj) {
   let incomingAddressList = Object.keys(dataObj);
