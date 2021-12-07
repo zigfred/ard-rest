@@ -92,11 +92,8 @@ async function calcHeating() {
     case calcDiffKw === 0: // calc is about full load
       await setFullLoadPeriods(command); // can be replaced by setLessNightPeriods
       break;
-    case calcDiffKw < -50: // calc if less
-      await setLessNightPeriodsFromMidnight(calcDiffKw, command);
-      break;
     case calcDiffKw < 0: // calc if less
-      await setLessNightPeriods(calcDiffKw, command);
+      await setPartialNightPeriodsFromEnd(calcDiffKw, command);
       break;
     case calcDiffKw > 0: // calc if more
       await setFullLoadPeriods(command); // can be replaced by setLessNightPeriods
@@ -106,12 +103,50 @@ async function calcHeating() {
   return Promise.resolve();
 }
 
-async function setLessNightPeriods(calcDiff, command) {
+// heating ends at 7.00
+async function setPartialNightPeriodsFromEnd(calcDiff, command) {
   const { settings: { heaters } } = command;
 
-  const targetHeat = calculateTargetHeatAM(calcDiff, command);
+  const targetHeat = calculateTargetHeat(calcDiff, command, 8);
+  const hourPower = heaters.reduce((memo, h) => memo + h / 1000, 0);
+  const minutesToHeat = Math.floor(targetHeat / hourPower * 60);
+
+  // skip if period too low
+  if (minutesToHeat < 15) {
+    return;
+  }
+
+  const extendToPM = minutesToHeat > 7 * 60;
+  const startMinute = extendToPM ? 0 : 7 * 60 - minutesToHeat;
+
+  command.settings.periods = [
+    new Period()
+    .setStartTime(0, startMinute)
+    .setStopTime(7, 0)
+    .setHeaters(heaters)
+    .setRun(true)
+    .toJSON()
+  ];
+  if (extendToPM) {
+    command.settings.periods.push(new Period()
+    .setStartTime(23, 0)
+    .setStopTime(23, 59)
+    .setHeaters(heaters)
+    .setRun(true)
+    .toJSON());
+  }
+
+  command.markModified('settings');
+  await command.save();
+}
+
+// heating includes first hour and second period that ends at 7.00
+async function setPartialNightPeriodsFirstHourAndToEnd(calcDiff, command) {
+  const { settings: { heaters } } = command;
+
+  const targetHeatAM = calculateTargetHeat(calcDiff, command, 7);
   const minutePower = heaters.reduce((memo, h) => memo + h / 1000 / 60, 0);
-  const minutesToHeat = Math.floor(targetHeat / minutePower);
+  const minutesToHeat = Math.floor(targetHeatAM / minutePower);
   if (minutesToHeat < 15) {
     return;
   }
@@ -136,12 +171,13 @@ async function setLessNightPeriods(calcDiff, command) {
   await command.save();
 }
 
-async function setLessNightPeriodsFromMidnight(calcDiff, command) {
+// heating starts from 23.00
+async function setPartialNightPeriodsFromMidnight(calcDiff, command) {
   const { settings: { heaters } } = command;
 
-  const targetHeat = calculateTargetHeatAM(calcDiff, command);
+  const targetHeatAM = calculateTargetHeat(calcDiff, command, 7);
   const minutePower = heaters.reduce((memo, h) => memo + h / 1000 / 60, 0);
-  const minutesToHeat = Math.floor(targetHeat / minutePower);
+  const minutesToHeat = Math.floor(targetHeatAM / minutePower);
   if (minutesToHeat < 15) {
     return;
   }
@@ -165,10 +201,10 @@ async function setLessNightPeriodsFromMidnight(calcDiff, command) {
   await command.save();
 }
 
-function calculateTargetHeatAM(calcDiff, command) {
+function calculateTargetHeat(calcDiff, command, hours) {
   const { settings: { heaters }} = command;
-  const fullHeat7h = heaters.reduce((memo, power) => memo + power / 1000 * 7, 0);
-  return fullHeat7h - Math.abs(calcDiff);
+  const calcHeat = heaters.reduce((memo, power) => memo + power / 1000 * hours, 0);
+  return calcHeat - Math.abs(calcDiff);
 }
 
 async function setFullLoadPeriods(command) {
@@ -241,6 +277,8 @@ class Period {
   }
 }
 
+// calculate heat diff between 8h run and target
+// if heatLossTFL=50, heat8h=90 so result -40
 function calculateDiff(heatLossTFL, command) {
   const { settings: { heaters }} = command;
 
