@@ -359,7 +359,8 @@ async function heaterRunner() {
     }
 
     // run and enable additional heaters
-    executePeriod(stateFlags, periodFlags);
+    //executePeriod(stateFlags, periodFlags);
+    executePeriodInstantly(periodFlags);
 
   } catch (err) {
     console.error(err);
@@ -412,13 +413,19 @@ const isCurrentPeriod = period => {
   return minutesStart <= minutesNow && minutesNow <= minutesStop;
 };
 
+const executePeriodInstantly = (periodFlags) => {
+  const periodArray = arrayFromMask(periodFlags);
+  const commandStringToExecute = createCommandStringFromArray(periodArray);
+  runCommand(commandStringToExecute);
+}
+
 const executePeriod = (stateFlags, periodFlags) => {
   //const arrayToExecute = arrayFromMask(stateFlags);
   // back to off immediately:
   // commented to not disable relays before executing commands
   const arrayToExecute = arrayFromMask(stateFlags & periodFlags);
-  // const commandStringToExecute = createCommandStringFromArray(arrayToExecute);
-  // runCommand(commandStringToExecute);
+  const commandStringToExecute = createCommandStringFromArray(arrayToExecute);
+  runCommand(commandStringToExecute);
 
   const periodArray = arrayFromMask(periodFlags);
 
@@ -460,7 +467,7 @@ const getData = async () => {
   } catch(err) {
     data = await getDataFromDB();
     if (!data) {
-      console.error('Get data issue, counter: ', silenceCounter);
+      console.error('Get data issue, counter: ', silenceCounter++);
       return false; // skip reset now, esp-link is not connected to mega
       // if (++silenceCounter > 10) {
       //   try {
