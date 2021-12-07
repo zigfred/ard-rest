@@ -115,7 +115,9 @@ function getDataFromArduino(arduino) {
     .catch(err => {
       console.log("get", arduinoUri, err.code);
       return {
-        ['online-' + arduino.label]: 0
+        data: {
+          ['online-' + arduino.label]: 0
+        }
       };
     });
 }

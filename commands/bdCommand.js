@@ -7,7 +7,7 @@ const axios = require('../config/axios').forCommand,
   wfController = require('../api/controllers/wfController');
 
 const COMMAND_ALIAS = 'bd';
-const RELAY_SWITCH_DELAY = 3000;
+const RELAY_SWITCH_DELAY = 3500;
 
 let silenceCounter = 0;
 
@@ -322,9 +322,7 @@ async function heaterRunner() {
         console.log('Overheating delay finished.');
       }
       if (currentState.run) {
-        setTimeout(() => {
-          runCommand('');
-        }, RELAY_SWITCH_DELAY * 6);
+        await runCommand('');
       }
       return;
     }
@@ -338,9 +336,7 @@ async function heaterRunner() {
     const taTempTop = data['28ff0579b516038c'];
     if (bdTempOut > 70 || taTempTop > 50) {
       console.log('Overheating detected, stop heating for 30m.');
-      setTimeout(() => {
-        runCommand('');
-      }, RELAY_SWITCH_DELAY * 6);
+      await runCommand('');
       stoppedByOverheatingTimestamp = +new Date();
       return;
     }
@@ -350,11 +346,7 @@ async function heaterRunner() {
     // stop if not in period or period says stop
     if (!currentPeriod || !currentPeriod.run) {
       if (currentState.run) {
-        // back to off immediately:
-        //executePeriod(stateFlags, 0);
-        setTimeout(() => {
-          runCommand('');
-        }, RELAY_SWITCH_DELAY * 6);
+        await runCommand('');
       }
       return;
     }
@@ -423,9 +415,10 @@ const isCurrentPeriod = period => {
 const executePeriod = (stateFlags, periodFlags) => {
   //const arrayToExecute = arrayFromMask(stateFlags);
   // back to off immediately:
+  // commented to not disable relays before executing commands
   const arrayToExecute = arrayFromMask(stateFlags & periodFlags);
-  const commandStringToExecute = createCommandStringFromArray(arrayToExecute);
-  runCommand(commandStringToExecute);
+  // const commandStringToExecute = createCommandStringFromArray(arrayToExecute);
+  // runCommand(commandStringToExecute);
 
   const periodArray = arrayFromMask(periodFlags);
 
