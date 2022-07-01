@@ -46,9 +46,8 @@ async function loop() {
     const pingChecks = await Promise.all(arduinos.map(pingCheckArduinos));
     Object.assign.apply(null, [dataObj, ...pingChecks]);
 
-    //dataObj.powerCheck = await pingCheck('192.168.1.92');
-    //dataObj.stationEuroTankCheck = await pingCheck('192.168.1.73');
     dataObj['ping-esp-71-dc-reseter'] = await pingCheck('192.168.1.71');
+    dataObj['ping-esp-73-et'] = await pingCheck('192.168.1.73');
     dataObj['ping-global-link'] = await pingCheck('8.8.8.8');
 
 

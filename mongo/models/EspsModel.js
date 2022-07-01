@@ -6,7 +6,7 @@ var EspsSchema = new Schema({
   name: {
     type: String
   },
-  state: {},
+  settings: {}
 });
 
 module.exports = mongoose.model('Esps', EspsSchema);

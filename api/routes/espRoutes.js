@@ -1,9 +1,9 @@
+const esp = require('../controllers/espController')
 module.exports = function(app) {
-  var esp = require('../controllers/espController');
 
   app.route('/esp/euroTank')
-    .post(esp.euroTank.syncData);
+    .get(esp.euroTank.getData);
   app.route('/esp/euroTank/command')
-    .get(esp.euroTank.updateCommand);
+    .put(esp.euroTank.updateCommand);
 
 };
