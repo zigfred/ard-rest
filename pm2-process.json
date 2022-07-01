@@ -24,5 +24,9 @@
     "name"        : "bdCommand",
     "script"      : "./commands/bdCommand.js",
     "log_date_format" : "YYYY-MM-DD HH:mm Z"
+  }, {
+    "name"        : "etCommand",
+    "script"      : "./commands/etCommand.js",
+    "log_date_format" : "YYYY-MM-DD HH:mm Z"
   }]
 }
