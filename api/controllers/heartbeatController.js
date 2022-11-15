@@ -8,6 +8,10 @@ exports.get = function(req, res) {
     if (err)
       res.send(err);
 
+    if (!data) {
+      return res.json({});
+    }
+
     const resultData = data.toObject().data;
 
     const filteredData = Object.keys(resultData)

@@ -47,7 +47,6 @@ async function loop() {
     Object.assign.apply(null, [dataObj, ...pingChecks]);
 
     dataObj['ping-esp-71-dc-reseter'] = await pingCheck('192.168.1.71');
-    dataObj['ping-esp-73-et'] = await pingCheck('192.168.1.73');
     dataObj['ping-global-link'] = await pingCheck('8.8.8.8');
 
 
@@ -59,6 +58,7 @@ async function loop() {
 
     dataObj['ping-hp-supreme-12'] = await pingCheck('192.168.1.181');
     dataObj['ping-hp-arctic-12'] = await pingCheck('192.168.1.182');
+    dataObj['ping-hp-supreme-12-2'] = await pingCheck('192.168.1.183');
 
     if (Object.keys(dataObj).length === 0) {
       console.log("Nothing to save. Done.");

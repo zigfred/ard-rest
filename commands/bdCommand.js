@@ -334,7 +334,7 @@ async function heaterRunner() {
 
     const bdTempOut = data['280c0107165d0113'];
     const taTempTop = data['28ff0579b516038c'];
-    if (bdTempOut > 70 || taTempTop > 50) {
+    if (bdTempOut > 75 || taTempTop > 65) {
       console.log('Overheating detected, stop heating for 30m.');
       await runCommand('');
       stoppedByOverheatingTimestamp = +new Date();

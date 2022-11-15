@@ -39,10 +39,10 @@ const select = [
 ];
 
 async function loop() {
-  await heaterRunner();
+  await commandRunner();
 }
 
-async function heaterRunner() {
+async function commandRunner() {
   try {
     const command = await Esps.findOne({ name: ESP_ALIAS });
     const data = await getCollectorDataFromDB();
