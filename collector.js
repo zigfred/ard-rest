@@ -109,10 +109,19 @@ function getDataFromArduino(arduino) {
   let arduinoUri = "http://" + arduino.ip + ":" + arduino.port;
   return axios.get(arduinoUri)
     .then((response) => {
+      // safe NaN parsing
+      if (response.data.replace) {
+        try {
+          response.data = response.data.replace("NAN", 0);
+          return JSON.parse(response.data);
+        } catch (e) {
+          throw(new Error('Error parse json response'));
+        }
+      }
       return response.data;
     })
     .catch(err => {
-      console.log("get", arduinoUri, err.code);
+      console.error("get", arduinoUri, err.code, err.message);
       return {
         data: {
           ['online-' + arduino.label]: 0
