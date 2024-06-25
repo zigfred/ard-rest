@@ -10,7 +10,8 @@ exports.euroTank = {
       'data.et-tank-empty',
       'data.et-pump-run',
       'data.et-fill-opened',
-      'data.et-irrigate-opened',
+      'data.et-irrigate1-opened',
+      'data.et-irrigate2-opened',
       'data.et-free-heap'
     ];
 
