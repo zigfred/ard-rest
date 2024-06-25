@@ -52,9 +52,12 @@ async function loop() {
       return;
     }
 
-    const { '28ffbb7e621801e4': fromTT } = data;
+    const {
+      '28ffbb7e621801e4': fromTT,
+      'bw-smoke-1': smokeTemp
+    } = data;
 
-    const targetAngle = calcAutoAngle(fromTT);
+    const targetAngle = calcAutoAngle(fromTT, smokeTemp);
     if (targetAngle !== command.autoValue) {
       await saveValue(targetAngle, command);
     }
@@ -102,9 +105,15 @@ const calcPosition = (currentAngle, targetAngle, currentPosition) => {
     : currentPosition + step;
 };
 
-const calcAutoAngle = (fromTT) => {
+const calcAutoAngle = (fromTT, smokeTemp) => {
   // https://planetcalc.ru/5992/
-  const angle = 164793178.9496*Math.pow(0.8260, fromTT) - 1;
+  let angle = 164793178.9496*Math.pow(0.8260, fromTT) - 1;
+  // smokeTemp experimental
+  // divide by 2
+  if (smokeTemp > 200) {
+    angle = angle/2;
+  }
+
   return convertValue(angle);
 };
 
