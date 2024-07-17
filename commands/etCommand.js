@@ -32,6 +32,7 @@ const select = [
   'data.et-pressure',
   'data.et-tank-full',
   'data.et-tank-empty',
+  'data.et-tank-empty-control',
   'data.et-pump-run',
   'data.et-fill-opened',
   'data.et-irrigate1-opened',
