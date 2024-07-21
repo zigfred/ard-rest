@@ -38,7 +38,8 @@ const select = [
   'data.et-irrigate1-opened',
   'data.et-irrigate2-opened',
   'data.et-free-heap',
-  'data.et-last-run-time'
+  'data.et-last-run-time',
+  'data.et-last-stop-time'
 ];
 
 async function loop() {
