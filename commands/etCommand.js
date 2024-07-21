@@ -37,7 +37,8 @@ const select = [
   'data.et-fill-opened',
   'data.et-irrigate1-opened',
   'data.et-irrigate2-opened',
-  'data.et-free-heap'
+  'data.et-free-heap',
+  'data.et-last-run-time'
 ];
 
 async function loop() {
