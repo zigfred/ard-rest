@@ -1,5 +1,7 @@
-var mongoose = require('mongoose'),
+var axios = require('../../config/axios').forCommand,
+  mongoose = require('mongoose'),
   Collector = mongoose.model('Collector'),
+  Arduinos = mongoose.model('Arduinos'),
   Esps = mongoose.model('Esps');
 
 exports.euroTank = {
@@ -57,7 +59,21 @@ exports.euroTank = {
       res.json(result);
     } catch(err) {
       console.error(err);
-      res.code(500).send(err);
+      res.status(500).send(err);
+    }
+  },
+  executeCommand: async function (req, res) {
+    try {
+      const command = req.params.command;
+      const et = await Arduinos.findOne({ label: 'euro-tank' });
+      const url = `http://${et.ip}:${et.port}/command/${command}`;
+
+      const result = await axios.get(url);
+      res.json(result.data);
+    } catch (err) {
+      //console.error(err);
+      console.log('ET: Command network error.');
+      res.status(500).send(err.toString());
     }
   }
 };
